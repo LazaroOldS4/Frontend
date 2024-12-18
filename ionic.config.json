@@ -1,0 +1,7 @@
+{
+  "name": "todoo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
