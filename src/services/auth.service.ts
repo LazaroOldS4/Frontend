@@ -1,26 +1,39 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment';
+const API_URL = "http://127.0.0.1:4000/api/V1/Usuario"; 
 
-@Injectable({ providedIn: 'root' })
-export class AuthService {
-  private apiUrl = `${environment.apiUrl}/Usuario`;
+export const AuthService = {
+  login: async (data: { Email: string; Password: string }) => {
+    const response = await fetch(`${API_URL}/IniciarSesion`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error("Credenciales incorrectas");
+    return response.json();
+  },
 
-  constructor(private http: HttpClient) {}
+  registerPaciente: async (data: any) => {
+    const response = await fetch(`${API_URL}/Registrar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...data, id_rol: 3 }),
+    });
+    if (!response.ok) throw new Error("Error al registrar paciente");
+    return response.json();
+  },
 
-  login(data: { Email: string, Password: string }) {
-    return this.http.post(`${this.apiUrl}/IniciarSesion`, data);
-  }
+  registerDoctor: async (data: any) => {
+    const response = await fetch(`${API_URL}/Registrar/admin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...data, id_rol: 2 }),
+    });
+    if (!response.ok) throw new Error("Error al registrar doctor");
+    return response.json();
+  },
 
-  registerPaciente(data: any) {
-    return this.http.post(`${this.apiUrl}/Registrar`, { ...data, id_rol: 3 });
-  }
-
-  registerDoctor(data: any) {
-    return this.http.post(`${this.apiUrl}/Registrar/admin`, { ...data, id_rol: 2 });
-  }
-
-  getProfile(id: number) {
-    return this.http.get(`${this.apiUrl}/usuarios/${id}`);
-  }
-}
+  getProfile: async (id: number) => {
+    const response = await fetch(`${API_URL}/usuarios/${id}`);
+    if (!response.ok) throw new Error("No se pudo obtener el perfil");
+    return response.json();
+  },
+};

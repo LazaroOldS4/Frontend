@@ -1,26 +1,35 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment';
+import { DoctorModel } from "../models/doctor-model";
 
-@Injectable({ providedIn: 'root' })
-export class DoctorsService {
-  private apiUrl = `${environment.apiUrl}/Doctor`;
+const API_URL = "http://127.0.0.1:4000/api/V1/Doctor";
 
-  constructor(private http: HttpClient) {}
+export const DoctorsService = {
+  getAll: async (): Promise<DoctorModel[]> => {
+    const response = await fetch(`${API_URL}/Doctors`);
+    if (!response.ok) throw new Error("Error al obtener doctores");
+    return response.json();
+  },
 
-  getAll() {
-    return this.http.get(`${this.apiUrl}/Doctors`);
-  }
+  getById: async (id: string): Promise<DoctorModel> => {
+    const response = await fetch(`${API_URL}/${id}`);
+    if (!response.ok) throw new Error("Error al obtener doctor");
+    return response.json();
+  },
 
-  getById(id: number) {
-    return this.http.get(`${this.apiUrl}/${id}`);
-  }
+  update: async (id: string, data: Partial<DoctorModel>) => {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error("Error al actualizar doctor");
+    return response.json();
+  },
 
-  update(id: number, data: any) {
-    return this.http.patch(`${this.apiUrl}/${id}`, data);
-  }
-
-  delete(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
-  }
-}
+  delete: async (id: string) => {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Error al eliminar doctor");
+    return response.json();
+  },
+};
